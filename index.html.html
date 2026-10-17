@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Smart Hub</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f7fb;color:#172033;transition:.3s}
+body.dark{background:#101522;color:#f4f7fb}
+header{padding:28px 7%;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white}
+nav{display:flex;justify-content:space-between;align-items:center;gap:15px}
+.logo{font-size:24px;font-weight:800}
+nav button{border:0;border-radius:20px;padding:9px 15px;cursor:pointer}
+.hero{padding:45px 0 20px}
+.hero h1{font-size:42px;margin-bottom:10px}
+.hero p{font-size:17px;opacity:.9}
+.container{width:86%;max-width:1100px;margin:28px auto}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.tabs button{padding:12px 18px;border:0;border-radius:10px;background:white;cursor:pointer;font-weight:700;box-shadow:0 3px 12px #00000012}
+body.dark .tabs button,.card{background:#192235;color:#f4f7fb}
+.tabs button.active{background:#4f46e5;color:white}
+.card{background:white;border-radius:18px;padding:25px;box-shadow:0 5px 20px #00000012}
+.tool{display:none}.tool.active{display:block}
+h2{margin-bottom:18px}
+input,select{width:100%;padding:12px;border:1px solid #ccd3df;border-radius:9px;margin:7px 0 12px;background:transparent;color:inherit}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.btn{padding:12px 18px;border:0;border-radius:9px;background:#4f46e5;color:white;font-weight:700;cursor:pointer;margin-top:5px}
+.result{margin-top:18px;padding:16px;border-radius:10px;background:#eef2ff;font-weight:700}
+body.dark .result{background:#252e49}
+.calc-display{font-size:28px;text-align:right;padding:15px;border-radius:10px;background:#eef2ff;margin-bottom:12px;min-height:62px;overflow:auto}
+body.dark .calc-display{background:#252e49}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.calc-grid button{padding:18px;border:0;border-radius:10px;font-size:18px;font-weight:bold;cursor:pointer;background:#e8ebf2}
+.calc-grid .op{background:#c7d2fe}
+footer{text-align:center;padding:30px;opacity:.7}
+@media(max-width:600px){.hero h1{font-size:31px}.container{width:92%}.card{padding:18px}}
+</style>
+</head>
+<body>
+<header>
+<nav><div class="logo">🎓 Student Smart Hub</div><button onclick="toggleDark()">🌙 Dark Mode</button></nav>
+<div class="hero"><h1>Calculate. Analyze. Improve.</h1><p>Your simple student utility dashboard</p></div>
+</header>
+
+<main class="container">
+<div class="tabs">
+<button class="active" onclick="showTool('calc',this)">🧮 Calculator</button>
+<button onclick="showTool('marks',this)">📊 Marks</button>
+<button onclick="showTool('cgpa',this)">🎓 CGPA</button>
+</div>
+
+<section id="calc" class="tool active card">
+<h2>Basic Calculator</h2>
+<div id="display" class="calc-display">0</div>
+<div class="calc-grid">
+<button onclick="press('7')">7</button><button onclick="press('8')">8</button><button onclick="press('9')">9</button><button class="op" onclick="press('/')">÷</button>
+<button onclick="press('4')">4</button><button onclick="press('5')">5</button><button onclick="press('6')">6</button><button class="op" onclick="press('*')">×</button>
+<button onclick="press('1')">1</button><button onclick="press('2')">2</button><button onclick="press('3')">3</button><button class="op" onclick="press('-')">−</button>
+<button onclick="press('0')">0</button><button onclick="press('.')">.</button><button onclick="calculate()">=</button><button class="op" onclick="press('+')">+</button>
+<button onclick="clearCalc()" style="grid-column:span 4;background:#fecaca">Clear</button>
+</div>
+</section>
+
+<section id="marks" class="tool card">
+<h2>Marks & Percentage Calculator</h2>
+<p>Enter marks obtained and maximum marks for each subject.</p>
+<div id="subjects"></div>
+<button class="btn" onclick="addSubject()">+ Add Subject</button>
+<button class="btn" onclick="calculateMarks()">Calculate</button>
+<div id="marksResult" class="result">Your result will appear here.</div>
+</section>
+
+<section id="cgpa" class="tool card">
+<h2>CGPA Calculator</h2>
+<p>Enter your subject grade points and credits.</p>
+<div id="grades"></div>
+<button class="btn" onclick="addGrade()">+ Add Subject</button>
+<button class="btn" onclick="calculateCGPA()">Calculate CGPA</button>
+<div id="cgpaResult" class="result">Your CGPA will appear here.</div>
+</section>
+</main>
+<footer>Built for Rapid Website Build • Student Smart Hub</footer>
+
+<script>
+function showTool(id,btn){
+ document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
+ btn.classList.add('active');
+}
+function toggleDark(){document.body.classList.toggle('dark')}
+let expr='';
+function press(v){expr+=v;document.getElementById('display').textContent=expr}
+function clearCalc(){expr='';document.getElementById('display').textContent='0'}
+function calculate(){
+ try{if(!/^[0-9+\-*/.() ]+$/.test(expr))throw 0;expr=String(Function('"use strict";return ('+expr+')')());document.getElementById('display').textContent=expr}
+ catch(e){document.getElementById('display').textContent='Error';expr=''}
+}
+function addSubject(){
+ const d=document.createElement('div');d.className='grid';
+ d.innerHTML='<input class="obt" type="number" min="0" placeholder="Marks Obtained"><input class="max" type="number" min="1" value="100" placeholder="Maximum Marks">';
+ document.getElementById('subjects').appendChild(d);
+}
+function calculateMarks(){
+ let o=[...document.querySelectorAll('.obt')],m=[...document.querySelectorAll('.max')],obt=0,max=0;
+ o.forEach((x,i)=>{obt+=Number(x.value)||0;max+=Number(m[i].value)||0});
+ let p=max?obt/max*100:0;
+ document.getElementById('marksResult').innerHTML=`Total: ${obt} / ${max}<br>Percentage: ${p.toFixed(2)}%`;
+}
+function addGrade(){
+ const d=document.createElement('div');d.className='grid';
+ d.innerHTML='<input class="gp" type="number" min="0" max="10" step=".1" placeholder="Grade Point (0-10)"><input class="cr" type="number" min="1" placeholder="Credits">';
+ document.getElementById('grades').appendChild(d);
+}
+function calculateCGPA(){
+ let gp=[...document.querySelectorAll('.gp')],cr=[...document.querySelectorAll('.cr')],sum=0,credits=0;
+ gp.forEach((x,i)=>{let g=Number(x.value)||0,c=Number(cr[i].value)||0;sum+=g*c;credits+=c});
+ let cg=credits?sum/credits:0;
+ document.getElementById('cgpaResult').innerHTML=`CGPA: ${cg.toFixed(2)} / 10<br>${cg>=9?'Excellent!':cg>=7.5?'Great work!':cg>=6?'Keep improving!':'Keep practicing!'}`;
+}
+for(let i=0;i<5;i++)addSubject();
+for(let i=0;i<5;i++)addGrade();
+</script>
+</body>
+</html>
